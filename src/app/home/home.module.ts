@@ -5,6 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
+import * as QrcodeReaderStore from './store/qrcode.reducer';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { QRCodeEffects } from './store/qrcode.effects';
 
 
 @NgModule({
@@ -12,7 +16,9 @@ import { HomePageRoutingModule } from './home-routing.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
+    StoreModule.forFeature(QrcodeReaderStore.qrcodeReaderKey, QrcodeReaderStore.reducer),
+    EffectsModule.forFeature([QRCodeEffects])
   ],
   declarations: [HomePage]
 })
