@@ -21,8 +21,66 @@ import { DialogService } from '../../services/dialog.service';
 
 @Component({
   selector: 'app-barcode-scanning',
-  template: 'barcode-scanning-modal.html',
-  styles: ['barcode-scanning-modal.scss'],
+  // templateUrl: 'barcode-scanning-modal.component.html',
+  // styleUrls: ['barcode-scanning-modal.component.scss'],
+  template: `
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Scanning</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div #square class="square"></div>
+      <div class="zoom-ratio-wrapper">
+        <ion-range
+          [min]="minZoomRatio"
+          [max]="maxZoomRatio"
+          [disabled]="minZoomRatio === undefined || maxZoomRatio === undefined"
+          (ionChange)="setZoomRatio($any($event))"
+        ></ion-range>
+      </div>
+      @if (isTorchAvailable) {
+        <ion-fab slot="fixed" horizontal="end" vertical="bottom">
+          <ion-fab-button (click)="toggleTorch()">
+            <ion-icon name="flashlight"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      }
+    </ion-content>
+  `,
+  styles: [
+    `
+      ion-content {
+        --background: transparent;
+      }
+
+      .square {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 16px;
+        width: 200px;
+        height: 200px;
+        border: 6px solid white;
+        box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.3);
+      }
+
+      .zoom-ratio-wrapper {
+        position: absolute;
+        left: 50%;
+        bottom: 16px;
+        transform: translateX(-50%);
+        width: 50%;
+      }
+    `,
+  ],
 })
 export class BarcodeScanningModalComponent
   implements OnInit, AfterViewInit, OnDestroy
