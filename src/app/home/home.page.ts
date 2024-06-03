@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { AlertController } from '@ionic/angular';
+import { Barcode, BarcodeScanner, ScanResult } from '@capacitor-mlkit/barcode-scanning';
+
+import * as QrcodeGeneratorStore from './store/qrcode.reducer';
+import { Store } from '@ngrx/store';
+import { updateQRId } from './store/qrcode.actions';
+import { Observable } from 'rxjs';
+import { selectQrId } from './store/qrcode.selectors';
 
 @Component({
   selector: 'app-home',
@@ -8,10 +14,15 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
+  qrId$: Observable<string> = this.store.select(selectQrId);
+
   isSupported = false;
   barcodes: Barcode[] = [];
 
-  constructor(private alertController: AlertController) {}
+  constructor(
+    private alertController: AlertController,
+    private store: Store<QrcodeGeneratorStore.State>
+  ) {}
 
   ngOnInit() {
     BarcodeScanner.isSupported().then((result) => {
@@ -26,6 +37,9 @@ export class HomePage implements OnInit {
       return;
     }
     const { barcodes } = await BarcodeScanner.scan();
+
+    this.store.dispatch(updateQRId({ qrId: barcodes[0].rawValue! }));
+
     this.barcodes.push(...barcodes);
   }
 
