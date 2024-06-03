@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package equadrado.qrcode.reader;
 
 import com.getcapacitor.BridgeActivity;
 
