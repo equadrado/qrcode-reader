@@ -11,6 +11,7 @@ import { HomePage } from './home.page';
 import * as QrcodeGeneratorStore from './store/qrcode.reducer';
 import { HomePageRoutingModule } from './home-routing.module';
 import { QRCodeEffects } from './store/qrcode.effects';
+import { ImagePickerComponent } from './image-picker/image-picker.component';
 
 
 @NgModule({
@@ -22,6 +23,6 @@ import { QRCodeEffects } from './store/qrcode.effects';
     StoreModule.forFeature(QrcodeGeneratorStore.qrcodeReaderKey, QrcodeGeneratorStore.reducer),
     EffectsModule.forFeature([QRCodeEffects])
   ],
-  declarations: [HomePage]
+  declarations: [HomePage, ImagePickerComponent]
 })
 export class HomePageModule {}

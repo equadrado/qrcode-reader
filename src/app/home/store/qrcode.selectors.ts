@@ -8,6 +8,11 @@ export const selectQrId = createSelector(
    (state: State) => state.qrId
 )
 
+export const selectQrCodeDocument = createSelector(
+   getState,
+   (state: State) => state.qrCodeDocument
+)
+
 export const selectPlatform = createSelector(
    getState,
    (state: State) => state.platform
@@ -16,4 +21,9 @@ export const selectPlatform = createSelector(
 export const selectCurrentDocument = createSelector(
    getState,
    (state: State) => state.currentDocument
+)
+
+export const selectScannedDocuments = createSelector(
+   getState,
+   (state: State) => state.scannedDocuments
 )

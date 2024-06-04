@@ -5,21 +5,35 @@ import { of, switchMap, tap } from 'rxjs';
 import { QRCodeDocument, ScannedDocument } from '../model/qrcode.model';
 
 import * as QrcodeGeneratorStore from '../store/qrcode.reducer';
+import { AlertController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class QrcodeService {
   private firebaseURL: string = 'https://wcfsolutioneq.firebaseio.com/';
-  private postURL: string = `${this.firebaseURL}qrcode.json`;
+  private baseURL: string = `${this.firebaseURL}qrcode/`;
   
   constructor(
     private http: HttpClient, 
+    private alertController: AlertController,
     store: Store<QrcodeGeneratorStore.State>
   ) {}
 
-  uploadDocument(scannedDocument: ScannedDocument) {
-    return this.http.put<any>(this.postURL, scannedDocument);
+  updateQRData(qrCodeDocument: QRCodeDocument, qrId: string) {
+    return this.http.put<any>(`${this.baseURL}${qrId}.json`, qrCodeDocument);
   }
 
+  getQRData(qrId: string) {
+    return this.http.get<QRCodeDocument>(`${this.baseURL}${qrId}.json`);
+  }
+
+  async presentAlert(header: string, message: string): Promise<void> {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
 }

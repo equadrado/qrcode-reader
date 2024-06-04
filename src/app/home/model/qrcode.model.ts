@@ -1,6 +1,8 @@
 export interface QRCodeDocument {
    qrId: string;
-   scannedDocuments: ScannedDocument[]
+   details?: string;
+   description?: string;
+   scannedDocuments?: ScannedDocument[]
 }
 
 export interface ScannedDocument {

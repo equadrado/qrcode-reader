@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
-import { Barcode, BarcodeScanner, ScanResult } from '@capacitor-mlkit/barcode-scanning';
+import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 
 import * as QrcodeGeneratorStore from './store/qrcode.reducer';
 import { Store } from '@ngrx/store';
-import { updateQRId } from './store/qrcode.actions';
+import { updateQRId, uploadQrCodeDocument } from './store/qrcode.actions';
 import { Observable } from 'rxjs';
-import { selectQrId } from './store/qrcode.selectors';
+import { selectQrCodeDocument, selectQrId, selectScannedDocuments } from './store/qrcode.selectors';
+import { QrcodeService } from './services/qrcode.service';
+import { QRCodeDocument, ScannedDocument } from './model/qrcode.model';
 
 @Component({
   selector: 'app-home',
@@ -15,12 +16,14 @@ import { selectQrId } from './store/qrcode.selectors';
 })
 export class HomePage implements OnInit {
   qrId$: Observable<string> = this.store.select(selectQrId);
+  qrCodeDocument$: Observable<QRCodeDocument | undefined> = this.store.select(selectQrCodeDocument);
+  documents$: Observable<ScannedDocument[]> = this.store.select(selectScannedDocuments);
 
   isSupported = false;
   barcodes: Barcode[] = [];
 
   constructor(
-    private alertController: AlertController,
+    private qrCodeService: QrcodeService,
     private store: Store<QrcodeGeneratorStore.State>
   ) {}
 
@@ -33,7 +36,7 @@ export class HomePage implements OnInit {
   async scan(): Promise<void> {
     const granted = await this.requestPermissions();
     if (!granted) {
-      this.presentAlert();
+      this.qrCodeService.presentAlert('Permission denied', 'Please grant camera permission to use the barcode scanner.');
       return;
     }
     const { barcodes } = await BarcodeScanner.scan();
@@ -48,12 +51,7 @@ export class HomePage implements OnInit {
     return camera === 'granted' || camera === 'limited';
   }
 
-  async presentAlert(): Promise<void> {
-    const alert = await this.alertController.create({
-      header: 'Permission denied',
-      message: 'Please grant camera permission to use the barcode scanner.',
-      buttons: ['OK'],
-    });
-    await alert.present();
+  upload() {
+    this.store.dispatch(uploadQrCodeDocument());
   }
 }

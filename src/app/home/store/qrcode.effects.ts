@@ -5,12 +5,15 @@ import { catchError, mergeMap, of, switchMap, tap, withLatestFrom } from "rxjs";
 
 import { QrcodeService } from "../services/qrcode.service";
 import * as QrcodeReaderStore from './qrcode.reducer';
-import { setError, setPlatform, updateQRId, updateQRdata, uploadDocument } from "./qrcode.actions";
-import { selectQrId } from "./qrcode.selectors";
+import { setError, setPlatform, updateQRId, setQRCodeDocument, uploadQrCodeDocument } from "./qrcode.actions";
+import { selectCurrentDocument, selectQrCodeDocument, selectQrId, selectScannedDocuments } from "./qrcode.selectors";
+import { QRCodeDocument } from "../model/qrcode.model";
 
 @Injectable()
 export class QRCodeEffects {
    qrId$ = this.store.select(selectQrId);
+   qrCodeDocument$ = this.store.select(selectQrCodeDocument);
+   scannedDocuments$ = this.store.select(selectScannedDocuments);
 
    constructor(
       private actions$: Actions,
@@ -25,14 +28,32 @@ export class QRCodeEffects {
       )
    );
 
-   uploadDocument$ = createEffect(() => 
+   updateQRId$ = createEffect(() => 
       this.actions$.pipe(
-         ofType(uploadDocument),
-         mergeMap((actions) => 
-            this.qrcodeService.uploadDocument(actions.scannedDocument).pipe(
+         ofType(updateQRId),
+         mergeMap((action) => 
+            this.qrcodeService.getQRData(action.qrId).pipe(
+               tap((response) => console.log(`Loaded QRCodeDocument ${response.qrId}`)),
+               switchMap((response: QRCodeDocument) => [
+                  setQRCodeDocument({ qrCodeDocument: response })
+               ]),
+               catchError((err) => of(setError({ error: err })))
+            )
+      ))
+   );
+
+   uploadQrCodeDocument$ = createEffect(() => 
+      this.actions$.pipe(
+         ofType(uploadQrCodeDocument),
+         withLatestFrom(this.qrId$, this.scannedDocuments$, this.qrCodeDocument$),
+         mergeMap(([, qrId, scannedDocuments, qrCodeDocument]) => 
+            this.qrcodeService.updateQRData({ 
+                  ...qrCodeDocument,
+                  scannedDocuments
+               } as QRCodeDocument, qrId).pipe(
                tap((response) => console.log(response)),
                switchMap((response: { name: string }) => [
-                  // updateQRId({qrId: response.name}),
+                  // add document data to list,
                ]),
                catchError((err) => of(setError({ error: err })))
             )

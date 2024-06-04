@@ -1,23 +1,23 @@
 import { Action, createReducer, on } from "@ngrx/store";
 import * as QRCodeReaderActions from './qrcode.actions';
-import { ScannedDocument } from "../model/qrcode.model";
+import { QRCodeDocument, ScannedDocument } from "../model/qrcode.model";
 
 export const qrcodeReaderKey = 'qrcodeReaderFeature';
 
 export interface State {
    platform: string;
-   qrdata: string;
+   qrCodeDocument: QRCodeDocument | undefined;
    qrId: string;
-   documents: ScannedDocument[];
+   scannedDocuments: ScannedDocument[];
    currentDocument: ScannedDocument | undefined;
    error: any;
 }
 
 export const initialState: State = {
    platform: 'none',
-   qrdata: '',
+   qrCodeDocument: undefined,
    qrId: '',
-   documents: [],
+   scannedDocuments: [],
    currentDocument: undefined,
    error: null
 }
@@ -30,21 +30,22 @@ const qrcodeReaderReducer = createReducer(
    })),
    on(QRCodeReaderActions.updateQRId, (state, { qrId }) => ({
       ...state,
-      qrId
+      qrId,
+      qrCodeDocument: undefined,
+      scannedDocuments: []
    })),
-   on(QRCodeReaderActions.scanNewDocument, (state, { docType }) => ({
+   on(QRCodeReaderActions.setCurrentDocument, (state, { currentDocument }) => ({
       ...state,
-      currentDocument: {
-         docId: Math.random().toString(),
-         docType
-      } as ScannedDocument
+      currentDocument
    })),
-   on(QRCodeReaderActions.saveDocument, (state, { docContent }) => ({
+   on(QRCodeReaderActions.addCurrentDocument, (state) => ({
       ...state,
-      currentDocument: {
-         ...state.currentDocument,
-         docContent
-      } as ScannedDocument
+      scannedDocuments: [...state.scannedDocuments, state.currentDocument!]
+   })),
+   on(QRCodeReaderActions.setQRCodeDocument, (state, { qrCodeDocument }) => ({
+      ...state,
+      qrCodeDocument,
+      scannedDocuments: qrCodeDocument.scannedDocuments ?? []
    }))
 )
 
