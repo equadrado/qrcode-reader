@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 
 import * as QrcodeGeneratorStore from './store/qrcode.reducer';
 import { Store } from '@ngrx/store';
-import { updateQRId, uploadQrCodeDocument } from './store/qrcode.actions';
+import { deleteScannedDocument, setCurrentDocument, updateQRId, uploadQrCodeDocument } from './store/qrcode.actions';
 import { Observable } from 'rxjs';
 import { selectQrCodeDocument, selectQrId, selectScannedDocuments } from './store/qrcode.selectors';
 import { QrcodeService } from './services/qrcode.service';
 import { QRCodeDocument, ScannedDocument } from './model/qrcode.model';
+import { NgIfContext } from '@angular/common';
+import { IonItemSliding } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -53,5 +55,17 @@ export class HomePage implements OnInit {
 
   upload() {
     this.store.dispatch(uploadQrCodeDocument());
+  }
+
+  onDocumentClick(currentDocument: ScannedDocument, slidingItem?: IonItemSliding) {
+    if (slidingItem) {
+      slidingItem.close();
+    }
+    this.store.dispatch(setCurrentDocument({ currentDocument }));
+  }
+
+  onDelete(docId: string, slidingItem: IonItemSliding) {
+    slidingItem.close();
+    this.store.dispatch(deleteScannedDocument({ docId }));
   }
 }

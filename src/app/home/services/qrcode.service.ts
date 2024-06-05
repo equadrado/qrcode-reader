@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { of, switchMap, tap } from 'rxjs';
-import { QRCodeDocument, ScannedDocument } from '../model/qrcode.model';
+import { QRCodeDocument } from '../model/qrcode.model';
 
 import * as QrcodeGeneratorStore from '../store/qrcode.reducer';
 import { AlertController } from '@ionic/angular';

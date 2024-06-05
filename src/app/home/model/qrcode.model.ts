@@ -10,3 +10,8 @@ export interface ScannedDocument {
    docType: 'IMAGE' | 'PDF';
    docContent?: string;
 }
+
+export interface QRError {
+   header: string;
+   message: string;
+}

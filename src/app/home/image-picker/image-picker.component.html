@@ -9,17 +9,36 @@
         *ngIf="selectedImage && showPreview"
       ></ion-img>
     </ion-row>
+    <ion-row radio-group [(ngModel)]="docType">
+        <ion-col>
+          <ion-item>
+            Type of document
+          </ion-item>
+        </ion-col>
+        <ion-col>
+          <ion-item>
+            <ion-label>Image</ion-label>
+            <ion-radio mode="md" value="IMAGE" aria-label="Image"></ion-radio>
+          </ion-item>
+        </ion-col>
+        <ion-col>
+          <ion-item>
+            <ion-label>PDF</ion-label>
+            <ion-radio mode="md" value="PDF" aria-label="PDF"></ion-radio>
+          </ion-item>
+        </ion-col>
+    </ion-row>
     <ion-row>
       <ion-col>
         <ion-button color="primary" (click)="onPickImage()">
           <ion-icon name="camera" slot="start"></ion-icon>
-          <ion-label>Take Picture</ion-label>
+          <ion-label>Add Document</ion-label>
         </ion-button>
       </ion-col>
       <ion-col *ngIf="(document$ | async)">
         <ion-button color="primary" (click)="onAddImage()">
           <ion-icon name="add" slot="start"></ion-icon>
-          <ion-label>Add Picture</ion-label>
+          <ion-label>Save Document</ion-label>
         </ion-button>
       </ion-col>
     </ion-row>
