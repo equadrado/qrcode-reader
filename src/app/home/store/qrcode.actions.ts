@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { QRCodeDocument, ScannedDocument } from '../model/qrcode.model';
+import { QRCodeDocument, QRError, ScannedDocument } from '../model/qrcode.model';
 
 const actionName = '[QR CODE READER]';
 
@@ -27,10 +27,14 @@ export const setCurrentDocument =  createAction(`${actionName} Set current Docum
    props<{currentDocument: ScannedDocument}>()
 );
 
+export const deleteScannedDocument =  createAction(`${actionName} Delete scanned Document`,
+   props<{docId: string}>()
+);
+
 export const addCurrentDocument =  createAction(`${actionName} Add current Document`);
 
 export const uploadQrCodeDocument =  createAction(`${actionName} Upload QR code Document`);
 
 export const setError =  createAction(`${actionName} Set error`,
-   props<{error: any}>()
+   props<{error: QRError | any}>()
 );

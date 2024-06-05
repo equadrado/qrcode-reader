@@ -10,7 +10,7 @@ export interface State {
    qrId: string;
    scannedDocuments: ScannedDocument[];
    currentDocument: ScannedDocument | undefined;
-   error: any;
+   error: { header: string, message: string } | any;
 }
 
 export const initialState: State = {
@@ -32,6 +32,7 @@ const qrcodeReaderReducer = createReducer(
       ...state,
       qrId,
       qrCodeDocument: undefined,
+      currentDocument: undefined,
       scannedDocuments: []
    })),
    on(QRCodeReaderActions.setCurrentDocument, (state, { currentDocument }) => ({
@@ -41,6 +42,10 @@ const qrcodeReaderReducer = createReducer(
    on(QRCodeReaderActions.addCurrentDocument, (state) => ({
       ...state,
       scannedDocuments: [...state.scannedDocuments, state.currentDocument!]
+   })),
+   on(QRCodeReaderActions.deleteScannedDocument, (state, { docId }) => ({
+      ...state,
+      scannedDocuments: [...state.scannedDocuments.filter((document) => document.docId != docId )]
    })),
    on(QRCodeReaderActions.setQRCodeDocument, (state, { qrCodeDocument }) => ({
       ...state,

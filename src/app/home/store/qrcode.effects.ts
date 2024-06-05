@@ -6,8 +6,8 @@ import { catchError, mergeMap, of, switchMap, tap, withLatestFrom } from "rxjs";
 import { QrcodeService } from "../services/qrcode.service";
 import * as QrcodeReaderStore from './qrcode.reducer';
 import { setError, setPlatform, updateQRId, setQRCodeDocument, uploadQrCodeDocument } from "./qrcode.actions";
-import { selectCurrentDocument, selectQrCodeDocument, selectQrId, selectScannedDocuments } from "./qrcode.selectors";
-import { QRCodeDocument } from "../model/qrcode.model";
+import { selectQrCodeDocument, selectQrId, selectScannedDocuments } from "./qrcode.selectors";
+import { QRCodeDocument, QRError } from "../model/qrcode.model";
 
 @Injectable()
 export class QRCodeEffects {
@@ -28,14 +28,46 @@ export class QRCodeEffects {
       )
    );
 
+   setError$ = createEffect(() => 
+      this.actions$.pipe(
+         ofType(setError),
+         tap((error) => {
+            console.log('QR error Alert', JSON.stringify(error));
+            const header = error.error?.hasOwnProperty('header') ? error.error.header : 'Error'; 
+            const message = error.error?.hasOwnProperty('message') ? error.error.message : JSON.stringify(error); 
+            
+            this.qrcodeService.presentAlert(header, message)
+            .then();
+         }),
+         switchMap((error) => [
+            updateQRId({ qrId: '' })
+         ])
+      ))
+   ;
+
    updateQRId$ = createEffect(() => 
       this.actions$.pipe(
          ofType(updateQRId),
          mergeMap((action) => 
             this.qrcodeService.getQRData(action.qrId).pipe(
-               tap((response) => console.log(`Loaded QRCodeDocument ${response.qrId}`)),
+               tap((response) => {
+                  console.log('QR GET Response', response);
+                  // if (!response) {
+                  //    this.qrcodeService.presentAlert(
+                  //       'Invalid QR Code', 
+                  //       'The QR code scanned doesnt match the expected format'
+                  //    ).then(() => 
+                  //       this.store.dispatch(updateQRId({ qrId: '' }))
+                  //    );
+                  // }
+               }),
                switchMap((response: QRCodeDocument) => [
-                  setQRCodeDocument({ qrCodeDocument: response })
+                  response
+                  ? setQRCodeDocument({ qrCodeDocument: response })
+                  : setError({ error: { 
+                     header: 'Invalid QR Code', 
+                     message: 'The QR code scanned doesnt match the expected format'
+                  }})
                ]),
                catchError((err) => of(setError({ error: err })))
             )
@@ -51,7 +83,7 @@ export class QRCodeEffects {
                   ...qrCodeDocument,
                   scannedDocuments
                } as QRCodeDocument, qrId).pipe(
-               tap((response) => console.log(response)),
+               tap((response) => console.log('Updating QrCodeDocument', response)),
                switchMap((response: { name: string }) => [
                   // add document data to list,
                ]),
@@ -60,15 +92,5 @@ export class QRCodeEffects {
          )
       )
    )
-
-   // updateQRId$ = createEffect(() => 
-   //    this.actions$.pipe(
-   //       ofType(updateQRId),
-   //       withLatestFrom(this.qrId$),
-   //       switchMap(([, qrId]) => [
-   //          updateQRdata({ qrdata: this.qrcodeService.generateQRCodeData(qrId) })
-   //       ])
-   //    )
-   // )
 
 }
