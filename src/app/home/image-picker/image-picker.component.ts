@@ -1,9 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { Capacitor } from '@capacitor/core';
-import { Platform } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
+import { Platform } from '@ionic/angular';
+import { Capacitor } from '@capacitor/core';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+// import { Crop } from '@ionic-native/crop/ngx';
+// import { Base64 } from '@ionic-native/base64/ngx';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -28,10 +30,13 @@ export class ImagePickerComponent  implements OnInit, OnDestroy {
   selectedImage: string | undefined;
   selectedPDF: any | undefined;
   docType: string = 'IMAGE';
+  ;
 
   constructor(
     private platform: Platform,
-    private store: Store<QrcodeGeneratorStore.State>
+    private store: Store<QrcodeGeneratorStore.State>,
+    // private crop: Crop,
+    // private base64: Base64
   ) { }
   
   ngOnInit() {
@@ -72,14 +77,17 @@ export class ImagePickerComponent  implements OnInit, OnDestroy {
       // height: 320,
       // width: 300,
       resultType: CameraResultType.Base64,
+      // resultType: CameraResultType.Uri,
       allowEditing: true,
-      
     })
-      .then(image => {
+      .then((image) => {
+        // this.cropImage(image.path!);
+
         const scanNewDocument: ScannedDocument = {
           docId: uuidv4(),
           docType: this.docType,
         } as ScannedDocument;
+
         this.selectedImage = `data:image/jpeg;base64,${image.base64String}`;
 
         if (this.docType === 'PDF') {
@@ -103,11 +111,11 @@ export class ImagePickerComponent  implements OnInit, OnDestroy {
           });
         } else {
           this.store.dispatch(setCurrentDocument({currentDocument: {
-            ...scanNewDocument,
-            docContent: this.selectedImage
-          }}
-        ));
-    }
+              ...scanNewDocument,
+              docContent: this.selectedImage
+            }}
+          ));
+        }
       })
       .catch(error => {
         console.log(error);
@@ -120,4 +128,46 @@ export class ImagePickerComponent  implements OnInit, OnDestroy {
     this.selectedImage = undefined;
   }
 
+  // cropImage(path: string) {
+  //   this.crop.crop(path)
+  //   .then((res) => {
+  //     const newPath = res.split('?')[0];
+
+  //     this.base64.encodeFile(newPath)
+  //     .then((image) => {
+  //       const scanNewDocument: ScannedDocument = {
+  //         docId: uuidv4(),
+  //         docType: this.docType,
+  //       } as ScannedDocument;
+  //       this.selectedImage = `data:image/jpeg;base64,${image}`;
+  
+  //       if (this.docType === 'PDF') {
+  //         let pdfContent: any;
+  //         let docDefinition = {
+  //           content: [
+  //             {
+  //               image: this.selectedImage,
+  //             }
+  //           ]
+  //         }
+  //         const pdfGenerator = pdfMake.createPdf(docDefinition);
+  //         pdfGenerator.getBase64( async (b64) => {
+  //           pdfContent = b64;
+  //           console.log('PDF content internal', pdfContent);
+  //           this.store.dispatch(setCurrentDocument({currentDocument: {
+  //               ...scanNewDocument,
+  //               docContent: `data:application/pdf;base64,${pdfContent}`
+  //             }}
+  //           ));
+  //         });
+  //       } else {
+  //         this.store.dispatch(setCurrentDocument({currentDocument: {
+  //             ...scanNewDocument,
+  //             docContent: this.selectedImage
+  //           }}
+  //         ));
+  //       }
+  //     })
+  //   })
+  // }
 }
