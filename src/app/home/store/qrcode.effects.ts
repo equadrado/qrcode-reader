@@ -5,7 +5,7 @@ import { catchError, mergeMap, of, switchMap, tap, withLatestFrom } from "rxjs";
 
 import { QrcodeService } from "../services/qrcode.service";
 import * as QrcodeReaderStore from './qrcode.reducer';
-import { setError, setPlatform, updateQRId, setQRCodeDocument, uploadQrCodeDocument } from "./qrcode.actions";
+import { setError, setPlatform, updateQRId, setQRCodeDocument, uploadQrCodeDocument, changeIsUpdated } from "./qrcode.actions";
 import { selectQrCodeDocument, selectQrId, selectScannedDocuments } from "./qrcode.selectors";
 import { QRCodeDocument, QRError } from "../model/qrcode.model";
 
@@ -52,14 +52,6 @@ export class QRCodeEffects {
             this.qrcodeService.getQRData(action.qrId).pipe(
                tap((response) => {
                   console.log('QR GET Response', response);
-                  // if (!response) {
-                  //    this.qrcodeService.presentAlert(
-                  //       'Invalid QR Code', 
-                  //       'The QR code scanned doesnt match the expected format'
-                  //    ).then(() => 
-                  //       this.store.dispatch(updateQRId({ qrId: '' }))
-                  //    );
-                  // }
                }),
                switchMap((response: QRCodeDocument) => [
                   response
@@ -83,9 +75,9 @@ export class QRCodeEffects {
                   ...qrCodeDocument,
                   scannedDocuments
                } as QRCodeDocument, qrId).pipe(
-               tap((response) => console.log('Updating QrCodeDocument', response)),
+               // tap((response) => console.log('Updating QrCodeDocument', response)),
                switchMap((response: { name: string }) => [
-                  // add document data to list,
+                  changeIsUpdated({ isUpdated: true })
                ]),
                catchError((err) => of(setError({ error: err })))
             )

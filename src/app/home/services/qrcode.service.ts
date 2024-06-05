@@ -13,6 +13,14 @@ export class QrcodeService {
   private firebaseURL: string = 'https://wcfsolutioneq.firebaseio.com/';
   private baseURL: string = `${this.firebaseURL}qrcode/`;
   
+  buttons: [
+    {
+      text: 'Okay',
+      handler: () => {
+      }
+    }
+  ]
+
   constructor(
     private http: HttpClient, 
     private alertController: AlertController,

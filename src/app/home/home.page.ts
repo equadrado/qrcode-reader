@@ -5,11 +5,11 @@ import * as QrcodeGeneratorStore from './store/qrcode.reducer';
 import { Store } from '@ngrx/store';
 import { deleteScannedDocument, setCurrentDocument, updateQRId, uploadQrCodeDocument } from './store/qrcode.actions';
 import { Observable } from 'rxjs';
-import { selectQrCodeDocument, selectQrId, selectScannedDocuments } from './store/qrcode.selectors';
+import { selectIsUpdated, selectQrCodeDocument, selectQrId, selectScannedDocuments } from './store/qrcode.selectors';
 import { QrcodeService } from './services/qrcode.service';
 import { QRCodeDocument, ScannedDocument } from './model/qrcode.model';
 import { NgIfContext } from '@angular/common';
-import { IonItemSliding } from '@ionic/angular';
+import { AlertController, IonItemSliding } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -18,6 +18,7 @@ import { IonItemSliding } from '@ionic/angular';
 })
 export class HomePage implements OnInit {
   qrId$: Observable<string> = this.store.select(selectQrId);
+  isUpdated$: Observable<boolean> = this.store.select(selectIsUpdated);
   qrCodeDocument$: Observable<QRCodeDocument | undefined> = this.store.select(selectQrCodeDocument);
   documents$: Observable<ScannedDocument[]> = this.store.select(selectScannedDocuments);
 
@@ -26,6 +27,7 @@ export class HomePage implements OnInit {
 
   constructor(
     private qrCodeService: QrcodeService,
+    private alertController: AlertController,
     private store: Store<QrcodeGeneratorStore.State>
   ) {}
 
@@ -66,6 +68,31 @@ export class HomePage implements OnInit {
 
   onDelete(docId: string, slidingItem: IonItemSliding) {
     slidingItem.close();
-    this.store.dispatch(deleteScannedDocument({ docId }));
+    this.alertController.create({
+      header: 'Atention',
+      message: 'Are you sure you want to delete this document?',
+      // inputs: [
+      // {
+      //   name: 'name1',
+      //   type: 'text'
+      // }],    
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          }
+        }, 
+        {
+          text: 'Ok',
+          handler: (alertData) => {
+            this.store.dispatch(deleteScannedDocument({ docId }));
+          }
+        }
+      ]
+    })
+    .then(alert => alert.present());
   }
 }

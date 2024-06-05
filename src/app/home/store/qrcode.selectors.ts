@@ -27,3 +27,8 @@ export const selectScannedDocuments = createSelector(
    getState,
    (state: State) => state.scannedDocuments
 )
+
+export const selectIsUpdated = createSelector(
+   getState,
+   (state: State) => state.isUpdated
+)

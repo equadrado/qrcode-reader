@@ -31,6 +31,10 @@ export const deleteScannedDocument =  createAction(`${actionName} Delete scanned
    props<{docId: string}>()
 );
 
+export const changeIsUpdated =  createAction(`${actionName} Change is Updated`,
+   props<{isUpdated: boolean}>()
+);
+
 export const addCurrentDocument =  createAction(`${actionName} Add current Document`);
 
 export const uploadQrCodeDocument =  createAction(`${actionName} Upload QR code Document`);

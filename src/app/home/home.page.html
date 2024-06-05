@@ -65,7 +65,7 @@
   </ion-fab>
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="start">
-    <ion-fab-button (click)="upload()" [disabled]="(qrCodeDocument$ | async) === undefined">
+    <ion-fab-button (click)="upload()" [disabled]="(isUpdated$ | async)">
       <ion-icon name="push"></ion-icon>
     </ion-fab-button>
   </ion-fab>

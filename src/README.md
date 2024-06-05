@@ -1,6 +1,8 @@
 npx ionic start test-update blank --type=angular --capacitor
 npm i @ngrx/effects
 npm i @ngrx/router-store
+npm i @ngrx/store
+npm i @ngrx/store-devtools
 
 npm i @capacitor/android
 npx cap add android
