@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { selectIsUpdated, selectQrCodeDocument, selectQrId, selectScannedDocuments } from '../store/qrcode.selectors';
 import { QrcodeService } from '../services/qrcode.service';
 import { QRCodeDocument, ScannedDocument } from '../model/qrcode.model';
+import { NgIfContext } from '@angular/common';
 import { AlertController, IonItemSliding } from '@ionic/angular';
 
 @Component({
