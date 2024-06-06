@@ -1,24 +1,28 @@
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
-import { catchError, mergeMap, of, switchMap, tap, withLatestFrom } from "rxjs";
+import { catchError, mergeMap, of, switchMap, take, tap, withLatestFrom } from "rxjs";
 
 import { QrcodeService } from "../services/qrcode.service";
 import * as QrcodeReaderStore from './qrcode.reducer';
-import { setError, setPlatform, updateQRId, setQRCodeDocument, uploadQrCodeDocument, changeIsUpdated } from "./qrcode.actions";
-import { selectQrCodeDocument, selectQrId, selectScannedDocuments } from "./qrcode.selectors";
-import { QRCodeDocument, QRError } from "../model/qrcode.model";
+import { setError, setPlatform, updateQRId, setQRCodeDocument, uploadQrCodeDocument, changeIsUpdated, signup, login, setUser } from "./qrcode.actions";
+import { selectQrCodeDocument, selectQrId, selectScannedDocuments, selectUser } from "./qrcode.selectors";
+import { AuthResponseData, QRCodeDocument, QRError } from "../model/qrcode.model";
+import { AuthService } from "../services/auth.service";
+import { User } from "../model/user.model";
 
 @Injectable()
 export class QRCodeEffects {
    qrId$ = this.store.select(selectQrId);
    qrCodeDocument$ = this.store.select(selectQrCodeDocument);
    scannedDocuments$ = this.store.select(selectScannedDocuments);
+   user$ = this.store.select(selectUser);
 
    constructor(
       private actions$: Actions,
       private store: Store<QrcodeReaderStore.State>,
       private qrcodeService: QrcodeService,
+      private authService: AuthService,
    ) {}
 
    setPlaform$ = createEffect(() => 
@@ -36,8 +40,7 @@ export class QRCodeEffects {
             const header = error.error?.hasOwnProperty('header') ? error.error.header : 'Error'; 
             const message = error.error?.hasOwnProperty('message') ? error.error.message : JSON.stringify(error); 
             
-            this.qrcodeService.presentAlert(header, message)
-            .then();
+            // this.qrcodeService.presentAlert(header, message);
          }),
          switchMap((error) => [
             updateQRId({ qrId: '' })
@@ -61,7 +64,7 @@ export class QRCodeEffects {
                      message: 'The QR code scanned doesnt match the expected format'
                   }})
                ]),
-               catchError((err) => of(setError({ error: err })))
+               catchError((error) => of(setError({ error })))
             )
       ))
    );
@@ -79,10 +82,51 @@ export class QRCodeEffects {
                switchMap((response: { name: string }) => [
                   changeIsUpdated({ isUpdated: true })
                ]),
-               catchError((err) => of(setError({ error: err })))
+               catchError((error) => of(setError({ error })))
             )
          )
       )
    )
+
+   signup$ = createEffect(() => 
+      this.actions$.pipe(
+         ofType(signup),
+         mergeMap((action) => 
+            this.authService.signup(action.email, action.password).pipe(
+               tap((response) => console.log('Signing Up', response)),
+               switchMap((response) => [
+                  setUser({ user: this.createNewUser(response) })
+               ]),
+               catchError((error) => of(setError({ error })))
+            )
+         )
+      )
+   )
+
+    login$ = createEffect(() => 
+      this.actions$.pipe(
+         ofType(login),
+         mergeMap((action) => 
+            this.authService.login(action.email, action.password).pipe(
+               switchMap((response) => [
+                  setUser({ user: this.createNewUser(response) })
+               ]),
+               catchError((error) => of(setError({ error })))
+            )
+         )
+      )
+   )
+
+   private createNewUser(userData: AuthResponseData): User | undefined {
+      const expirationTime = new Date(
+         new Date().getTime() + +userData.expiresIn * 1000
+       );
+      return new User(
+         userData.localId,
+         userData.email,
+         userData.idToken,
+         expirationTime   
+      );
+   }
 
 }

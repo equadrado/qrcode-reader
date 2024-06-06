@@ -1,8 +1,7 @@
 {
-  "name": "test-update",
+  "name": "qrcode-reader",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "Eduardo Quadrado",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

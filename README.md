@@ -1,4 +1,4 @@
-npx ionic start test-update blank --type=angular --capacitor
+npx ionic start qrcode-reader blank --type=angular --capacitor
 npm i @ngrx/effects
 npm i @ngrx/router-store
 

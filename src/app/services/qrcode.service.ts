@@ -35,12 +35,12 @@ export class QrcodeService {
     return this.http.get<QRCodeDocument>(`${this.baseURL}${qrId}.json`);
   }
 
-  async presentAlert(header: string, message: string): Promise<void> {
-    const alert = await this.alertController.create({
+  presentAlert(header: string, message: string) {
+    this.alertController.create({
       header,
       message,
       buttons: ['OK'],
-    });
-    await alert.present();
+    })
+    .then(alert => alert.present());
   }
 }

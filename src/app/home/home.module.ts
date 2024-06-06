@@ -8,9 +8,9 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 
 import { HomePage } from './home.page';
-import * as QrcodeGeneratorStore from './store/qrcode.reducer';
+import * as QrcodeGeneratorStore from '../store/qrcode.reducer';
 import { HomePageRoutingModule } from './home-routing.module';
-import { QRCodeEffects } from './store/qrcode.effects';
+import { QRCodeEffects } from '../store/qrcode.effects';
 import { ImagePickerComponent } from './image-picker/image-picker.component';
 
 

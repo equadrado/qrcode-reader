@@ -1,6 +1,7 @@
 import { Action, createReducer, on } from "@ngrx/store";
 import * as QRCodeReaderActions from './qrcode.actions';
 import { QRCodeDocument, ScannedDocument } from "../model/qrcode.model";
+import { User } from "../model/user.model";
 
 export const qrcodeReaderKey = 'qrcodeReaderFeature';
 
@@ -11,6 +12,7 @@ export interface State {
    scannedDocuments: ScannedDocument[];
    currentDocument: ScannedDocument | undefined;
    isUpdated: boolean;
+   user: User | undefined;
    error: { header: string, message: string } | any;
 }
 
@@ -21,6 +23,7 @@ export const initialState: State = {
    scannedDocuments: [],
    currentDocument: undefined,
    isUpdated: true,
+   user: undefined,
    error: null
 }
 
@@ -55,6 +58,10 @@ const qrcodeReaderReducer = createReducer(
    on(QRCodeReaderActions.changeIsUpdated, (state, { isUpdated }) => ({
       ...state,
       isUpdated
+   })),
+   on(QRCodeReaderActions.setUser, (state, { user }) => ({
+      ...state,
+      user
    })),
    on(QRCodeReaderActions.setQRCodeDocument, (state, { qrCodeDocument }) => ({
       ...state,

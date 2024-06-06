@@ -1,5 +1,5 @@
 {
-  "name": "test-update",
+  "name": "qrcode-reader",
   "integrations": {
     "capacitor": {}
   },

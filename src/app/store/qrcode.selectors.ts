@@ -32,3 +32,8 @@ export const selectIsUpdated = createSelector(
    getState,
    (state: State) => state.isUpdated
 )
+
+export const selectUser = createSelector(
+   getState,
+   (state: State) => state ? state.user : undefined
+)

@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { QRCodeDocument, QRError, ScannedDocument } from '../model/qrcode.model';
+import { User } from '../model/user.model';
 
 const actionName = '[QR CODE READER]';
 
@@ -41,4 +42,16 @@ export const uploadQrCodeDocument =  createAction(`${actionName} Upload QR code 
 
 export const setError =  createAction(`${actionName} Set error`,
    props<{error: QRError | any}>()
+);
+
+export const signup =  createAction(`${actionName} Signup`,
+   props<{email: string, password: string}>()
+);
+
+export const login =  createAction(`${actionName} Login`,
+   props<{email: string, password: string}>()
+);
+
+export const setUser =  createAction(`${actionName} Set user`,
+   props<{user: User | undefined}>()
 );
