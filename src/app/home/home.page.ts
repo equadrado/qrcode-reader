@@ -1,13 +1,13 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { Barcode, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 
-import * as QrcodeGeneratorStore from './store/qrcode.reducer';
+import * as QrcodeGeneratorStore from '../store/qrcode.reducer';
 import { Store } from '@ngrx/store';
-import { deleteScannedDocument, setCurrentDocument, updateQRId, uploadQrCodeDocument } from './store/qrcode.actions';
+import { deleteScannedDocument, setCurrentDocument, updateQRId, uploadQrCodeDocument } from '../store/qrcode.actions';
 import { Observable } from 'rxjs';
-import { selectIsUpdated, selectQrCodeDocument, selectQrId, selectScannedDocuments } from './store/qrcode.selectors';
-import { QrcodeService } from './services/qrcode.service';
-import { QRCodeDocument, ScannedDocument } from './model/qrcode.model';
+import { selectIsUpdated, selectQrCodeDocument, selectQrId, selectScannedDocuments } from '../store/qrcode.selectors';
+import { QrcodeService } from '../services/qrcode.service';
+import { QRCodeDocument, ScannedDocument } from '../model/qrcode.model';
 import { NgIfContext } from '@angular/common';
 import { AlertController, IonItemSliding } from '@ionic/angular';
 

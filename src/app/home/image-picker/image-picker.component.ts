@@ -9,10 +9,10 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import * as QrcodeGeneratorStore from '../store/qrcode.reducer';
-import { addCurrentDocument, setCurrentDocument } from '../store/qrcode.actions';
-import { ScannedDocument } from '../model/qrcode.model';
-import { selectCurrentDocument } from '../store/qrcode.selectors';
+import * as QrcodeGeneratorStore from '../../store/qrcode.reducer';
+import { addCurrentDocument, setCurrentDocument } from '../../store/qrcode.actions';
+import { ScannedDocument } from '../../model/qrcode.model';
+import { selectCurrentDocument } from '../../store/qrcode.selectors';
 
 import * as pdfMake from 'pdfmake/build/pdfmake';
 
